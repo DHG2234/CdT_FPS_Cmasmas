@@ -12,7 +12,7 @@ UCLASS()
 class CDT_FPS_CMASMAS_API AShotgun : public AWeapon
 {
 	GENERATED_BODY()
-	
+
 protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Projectile")
@@ -28,4 +28,6 @@ public:
 protected:
 
 	virtual void StartAction() override;
+
+	virtual void StopAction() override;
 };

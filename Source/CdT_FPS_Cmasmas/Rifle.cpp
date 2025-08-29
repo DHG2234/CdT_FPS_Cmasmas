@@ -4,6 +4,7 @@
 #include "Rifle.h"
 #include "DrawDebugHelpers.h"
 #include "Kismet/GameplayStatics.h"
+#include "CdT_FPS_Cmasmas.h"
 
 ARifle::ARifle()
 {
@@ -31,7 +32,7 @@ void ARifle::StartAction()
 		QueryParams.bTraceComplex = true;
 
 		FHitResult HitResult;
-		bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, EyeLocation, TraceEnd, ECC_Visibility, QueryParams);
+		bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, EyeLocation, TraceEnd, COLLISION_WEAPON, QueryParams);
 
 		if (bHit)
 		{

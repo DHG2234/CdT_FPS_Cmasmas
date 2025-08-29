@@ -27,3 +27,8 @@ void AShotgun::StartAction()
 		}
 	}
 }
+
+void AShotgun::StopAction()
+{
+	Super::StopAction();
+}

@@ -15,8 +15,11 @@ enum class FTPSCharacterType : uint8
 
 class UCameraComponent;
 class USpringArmComponent;
-
 class AWeapon;
+class UAnimMontage;
+class UAnimInstance;
+class UHealthComponent;
+class AFTPSGameMode;
 
 UCLASS()
 class CDT_FPS_CMASMAS_API AFTPSCharacter : public ACharacter
@@ -62,6 +65,31 @@ protected:
 	UPROPERTY(BlueprintReadWrite, Category = "Weapon")
 	AWeapon* CurrentWeapon;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animation")
+	UAnimMontage* MeleeMontage;
+
+	UAnimInstance* MyAnimInstance;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UCapsuleComponent* MeleeDetectorComponent;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Melee")
+	FName MeleeSocketName;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Melee")
+	float MeleeDamage;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Melee")
+	bool bIsDoingMelee;
+
+	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category = "Melee")
+	bool bCanUseWeapon;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UHealthComponent* HealthComponent;
+
+	AFTPSGameMode* GameModeReference;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -70,6 +98,14 @@ protected:
 	void MoveRight(float value);
 	virtual void Jump() override;
 	virtual void StopJumping() override;
+
+	void InitialReference();
+	void StartMelee();
+	void StopMelee();
+
+	UFUNCTION()
+	void MakeMeleeDamage(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 public:	
 	// Called every frame
@@ -90,4 +126,12 @@ public:
 	void CreateInitialWeapon();
 	void StartWeaponAction();
 	void StopWeaponAction();
+
+	void SetMeleeDetectorCollision(ECollisionEnabled::Type NewCollisionState);
+
+	void SetActionsState(bool NewState);
+	
+	UFUNCTION()
+	void OnHealthChange(UHealthComponent* CurrentHealthComponent, AActor* DamagedActor, float Damage,
+		const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser);
 };
