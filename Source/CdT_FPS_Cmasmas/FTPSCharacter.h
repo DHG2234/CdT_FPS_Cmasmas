@@ -62,7 +62,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	TSubclassOf<AWeapon>InitialWeaponClass;
 
-	UPROPERTY(BlueprintReadWrite, Category = "Weapon")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	AWeapon* CurrentWeapon;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animation")
@@ -90,6 +90,9 @@ protected:
 
 	AFTPSGameMode* GameModeReference;
 
+	FTimerHandle TimerHandle_AutoFire;
+	bool bIsFiringWeapon;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -102,6 +105,8 @@ protected:
 	void InitialReference();
 	void StartMelee();
 	void StopMelee();
+
+	void HandleAutoFire();
 
 	UFUNCTION()
 	void MakeMeleeDamage(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -134,4 +139,9 @@ public:
 	UFUNCTION()
 	void OnHealthChange(UHealthComponent* CurrentHealthComponent, AActor* DamagedActor, float Damage,
 		const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser);
+
+	void ReloadWeapon();
+
+	UFUNCTION(BlueprintCallable, Category = "Melee")
+	bool IsDoingMelee() const { return bIsDoingMelee; }
 };

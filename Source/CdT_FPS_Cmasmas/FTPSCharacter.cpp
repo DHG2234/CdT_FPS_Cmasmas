@@ -81,6 +81,8 @@ void AFTPSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	PlayerInputComponent->BindAction("Weapon", IE_Pressed, this, &AFTPSCharacter::StartWeaponAction);
 	PlayerInputComponent->BindAction("Weapon", IE_Released, this, &AFTPSCharacter::StopWeaponAction);
 
+	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &AFTPSCharacter::ReloadWeapon);
+
 	PlayerInputComponent->BindAction("Melee", IE_Pressed, this, &AFTPSCharacter::StartMelee);
 	PlayerInputComponent->BindAction("Melee", IE_Released, this, &AFTPSCharacter::StopMelee);
 }
@@ -117,14 +119,20 @@ void AFTPSCharacter::InitialReference()
 
 void AFTPSCharacter::StartMelee()
 {
-	if (bIsDoingMelee)
-	{
+	if (bIsDoingMelee || (IsValid(CurrentWeapon) && CurrentWeapon->IsReloading()))
 		return;
+
+	// Si estaba disparando, detener
+	if (bIsFiringWeapon && IsValid(CurrentWeapon))
+	{
+		StopWeaponAction();
 	}
+
 	if (IsValid(MyAnimInstance) && IsValid(MeleeMontage))
 	{
 		MyAnimInstance->Montage_Play(MeleeMontage);
 	}
+
 	SetActionsState(true);
 }
 
@@ -147,6 +155,13 @@ void AFTPSCharacter::OnHealthChange(UHealthComponent* CurrentHealthComponent, AA
 			GameModeReference->GameOver(this);
 		}
 	}
+}
+
+void AFTPSCharacter::ReloadWeapon()
+{
+	if (!bCanUseWeapon || !IsValid(CurrentWeapon)) return;
+
+    CurrentWeapon->Reload();
 }
 
 void AFTPSCharacter::MakeMeleeDamage(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -199,27 +214,45 @@ void AFTPSCharacter::CreateInitialWeapon()
 
 void AFTPSCharacter::StartWeaponAction()
 {
-	if (!bCanUseWeapon)
-	{
+	if (!IsValid(CurrentWeapon) || CurrentWeapon->IsReloading() || bIsDoingMelee)
 		return;
-	}
-	if (IsValid(CurrentWeapon))
-	{
-		CurrentWeapon->StartAction();
-	}
+
+	bIsFiringWeapon = true;
+	HandleAutoFire();
 }
 
 void AFTPSCharacter::StopWeaponAction()
 {
-	if (!bCanUseWeapon)
-	{
-		return;
-	}
+	bIsFiringWeapon = false;
+	GetWorldTimerManager().ClearTimer(TimerHandle_AutoFire);
+
 	if (IsValid(CurrentWeapon))
 	{
 		CurrentWeapon->StopAction();
 	}
 }
+
+void AFTPSCharacter::HandleAutoFire()
+{
+	if (!bIsFiringWeapon || !IsValid(CurrentWeapon)) return;
+
+	// Si el arma está recargando o haciendo melee, no dispara
+	if (CurrentWeapon->IsReloading() || bIsDoingMelee) return;
+
+	// Intentar disparar
+	CurrentWeapon->StartAction();
+
+	// Configurar siguiente disparo después de FireRate
+	GetWorldTimerManager().SetTimer(
+		TimerHandle_AutoFire,
+		this,
+		&AFTPSCharacter::HandleAutoFire,
+		CurrentWeapon->GetFireRate(),
+		false
+	);
+}
+
+
 
 void AFTPSCharacter::SetMeleeDetectorCollision(ECollisionEnabled::Type NewCollisionState)
 {
