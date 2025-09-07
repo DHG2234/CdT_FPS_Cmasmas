@@ -128,4 +128,6 @@ public:
 	// Devuelve si el arma está recargando
 	UFUNCTION(BlueprintCallable, Category = "Weapon|Reload")
 	FORCEINLINE bool IsReloading() const { return bIsReloading; }
+
+	void AddAmmo(int32 Amount) { CurrentAmmo = FMath::Clamp(CurrentAmmo + Amount, 0, MaxAmmo); }
 };

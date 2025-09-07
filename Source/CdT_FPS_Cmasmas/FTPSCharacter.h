@@ -85,7 +85,7 @@ protected:
 	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category = "Melee")
 	bool bCanUseWeapon;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	UHealthComponent* HealthComponent;
 
 	AFTPSGameMode* GameModeReference;
@@ -146,6 +146,7 @@ public:
 	bool IsDoingMelee() const { return bIsDoingMelee; }
 
 public:
+
 	// Respawn system
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Respawn")
 	FVector InitialPosition;
@@ -163,4 +164,13 @@ public:
 	int32 CurrentRespawns;
 
 	void Respawn();
+
+public:
+
+	int32 GetRespawns() const { return CurrentRespawns; }
+	int32 GetMaxRespawns() const { return MaxRespawns; }
+	void AddRespawn(int32 Amount) { CurrentRespawns = FMath::Clamp(CurrentRespawns + Amount, 0, MaxRespawns); }
+
+	class UHealthComponent* GetHealthComponent() const { return HealthComponent; }
+	class AWeapon* GetCurrentWeapon() const { return CurrentWeapon; }
 };

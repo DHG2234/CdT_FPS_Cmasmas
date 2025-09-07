@@ -14,7 +14,7 @@ class CDT_FPS_CMASMAS_API UHealthComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:
+	protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health Component", meta = (clampMin = 0.0, UIMin = 0.0))
 	float MaxHealth;
@@ -53,4 +53,20 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	bool IsDead() const { return bIsDead; }
+
+	float GetHealth() const { return currentHealth; }
+	float GetMaxHealth() const { return MaxHealth; }
+	void AddHealth(float Amount) { currentHealth = FMath::Clamp(currentHealth + Amount, 0.f, MaxHealth); }
+
+	// Setear vida directamente (por ejemplo en Respawn)
+	void SetHealth(float NewHealth)
+	{
+		currentHealth = FMath::Clamp(NewHealth, 0.f, MaxHealth);
+	}
+
+	// Resetear estado de muerte
+	void Revive()
+	{
+		bIsDead = false;
+	}
 };

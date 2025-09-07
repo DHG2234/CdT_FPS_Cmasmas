@@ -60,7 +60,7 @@ void AFTPSCharacter::BeginPlay()
 	// Configuración inicial
 	InitialPosition = GetActorLocation();
 	InitialRotation = GetActorRotation();
-	InitialHealth = HealthComponent->IsValidLowLevel() ? HealthComponent->MaxHealth : 100.f;
+	InitialHealth = HealthComponent->IsValidLowLevel() ? HealthComponent->GetMaxHealth() : 100.f;
 
 	if (MaxRespawns <= 0) MaxRespawns = 3; // valor default
 	CurrentRespawns = MaxRespawns;
@@ -178,8 +178,11 @@ void AFTPSCharacter::Respawn()
 	CurrentRespawns--;
 
 	// Restaurar vida
-	HealthComponent->currentHealth = InitialHealth;
-	HealthComponent->bIsDead = false;
+	if (IsValid(HealthComponent))
+	{
+		HealthComponent->SetHealth(InitialHealth);
+		HealthComponent->Revive();
+	}
 
 	// Reubicar jugador
 	SetActorLocation(InitialPosition);
@@ -192,6 +195,7 @@ void AFTPSCharacter::Respawn()
 
 	GetWorldTimerManager().ClearTimer(TimerHandle_AutoFire);
 }
+
 
 
 void AFTPSCharacter::ReloadWeapon()
@@ -288,8 +292,6 @@ void AFTPSCharacter::HandleAutoFire()
 		false
 	);
 }
-
-
 
 void AFTPSCharacter::SetMeleeDetectorCollision(ECollisionEnabled::Type NewCollisionState)
 {

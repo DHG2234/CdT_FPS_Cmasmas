@@ -103,6 +103,9 @@ void AWeapon::FinishReload()
 
 	CurrentMagAmmo += AmmoToReload;
 	CurrentAmmo -= AmmoToReload;
+
+	// Actualizar estado de recarga después de terminar
+	CheckReloadState();
 }
 
 
