@@ -56,6 +56,14 @@ void AFTPSCharacter::BeginPlay()
 	MeleeDetectorComponent->OnComponentBeginOverlap.AddDynamic(this, &AFTPSCharacter::MakeMeleeDamage);
 	
 	HealthComponent->OnHealthChangeDelegate.AddDynamic(this, &AFTPSCharacter::OnHealthChange);
+
+	// Configuración inicial
+	InitialPosition = GetActorLocation();
+	InitialRotation = GetActorRotation();
+	InitialHealth = HealthComponent->IsValidLowLevel() ? HealthComponent->MaxHealth : 100.f;
+
+	if (MaxRespawns <= 0) MaxRespawns = 3; // valor default
+	CurrentRespawns = MaxRespawns;
 }
 
 // Called every frame
@@ -148,14 +156,43 @@ void AFTPSCharacter::SetActionsState(bool NewState)
 
 void AFTPSCharacter::OnHealthChange(UHealthComponent* CurrentHealthComponent, AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
 {
-	if (HealthComponent->IsDead() && GetCharacterType() == FTPSCharacterType::CharacterType_Player)
+	if (HealthComponent->IsDead())
 	{
-		if (IsValid(GameModeReference))
+		if (GetCharacterType() == FTPSCharacterType::CharacterType_Player)
 		{
-			GameModeReference->GameOver(this);
+			if (CurrentRespawns > 0)
+			{
+				Respawn();
+			}
+			else
+			{
+				// No respawns -> reinicia nivel
+				UGameplayStatics::OpenLevel(this, FName(*GetWorld()->GetName()), false);
+			}
 		}
 	}
 }
+
+void AFTPSCharacter::Respawn()
+{
+	CurrentRespawns--;
+
+	// Restaurar vida
+	HealthComponent->currentHealth = InitialHealth;
+	HealthComponent->bIsDead = false;
+
+	// Reubicar jugador
+	SetActorLocation(InitialPosition);
+	SetActorRotation(InitialRotation);
+
+	// Opcional: resetear estados de acción
+	bIsDoingMelee = false;
+	bIsFiringWeapon = false;
+	bCanUseWeapon = true;
+
+	GetWorldTimerManager().ClearTimer(TimerHandle_AutoFire);
+}
+
 
 void AFTPSCharacter::ReloadWeapon()
 {

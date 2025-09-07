@@ -144,4 +144,23 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Melee")
 	bool IsDoingMelee() const { return bIsDoingMelee; }
+
+public:
+	// Respawn system
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Respawn")
+	FVector InitialPosition;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Respawn")
+	FRotator InitialRotation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Respawn")
+	int32 InitialHealth;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Respawn")
+	int32 MaxRespawns;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Respawn")
+	int32 CurrentRespawns;
+
+	void Respawn();
 };

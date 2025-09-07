@@ -14,7 +14,7 @@ class CDT_FPS_CMASMAS_API UHealthComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-protected:
+public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health Component", meta = (clampMin = 0.0, UIMin = 0.0))
 	float MaxHealth;
@@ -53,5 +53,4 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	bool IsDead() const { return bIsDead; }
-		
 };
