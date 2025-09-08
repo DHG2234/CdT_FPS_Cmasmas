@@ -46,7 +46,7 @@ void ADoor::BeginPlay()
 		DoorTimelineComp->AddInterpFloat(DoorTimelineFloatCurve, UpdateFunctionFloat);
 	}
 	//Binding our Proximity Box Component to our Overlap Functions
-	DoorProxVolume->OnComponentEndOverlap.AddDynamic(this, &ADoor::CloseDoor);
+	//DoorProxVolume->OnComponentEndOverlap.AddDynamic(this, &ADoor::CloseDoor);
 }
 
 // Called every frame
@@ -90,7 +90,9 @@ void ADoor::DoorOpen()
 	bIsOpen = true;
 }
 
+/*
 void ADoor::CloseDoor(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	DoorTimelineComp->Reverse();
 }
+*/

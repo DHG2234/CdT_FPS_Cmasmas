@@ -72,7 +72,8 @@ private:
 	// Begin and End Overlap Events for our DoorProxVolume
 	UFUNCTION()
 	void DoorOpen();
-
+	/*
 	UFUNCTION()
 	void CloseDoor(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	*/
 };

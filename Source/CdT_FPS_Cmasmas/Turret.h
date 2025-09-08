@@ -49,11 +49,12 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Turret")
 	bool bIsInfinite;
+public:
 
-	UPROPERTY(EditAnywhere, Category = "Turret")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turret")
 	bool bIsActive;
 
-	UPROPERTY(EditAnywhere, Category = "Turret")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turret")
 	bool bIsRotating;
 
 public:
