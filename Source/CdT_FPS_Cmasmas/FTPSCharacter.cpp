@@ -130,7 +130,7 @@ void AFTPSCharacter::StartMelee()
 	if (bIsDoingMelee || (IsValid(CurrentWeapon) && CurrentWeapon->IsReloading()))
 		return;
 
-	// Si estaba disparando, detener
+	// Si esta disparando lo detiene
 	if (bIsFiringWeapon && IsValid(CurrentWeapon))
 	{
 		StopWeaponAction();
@@ -166,7 +166,7 @@ void AFTPSCharacter::OnHealthChange(UHealthComponent* CurrentHealthComponent, AA
 			}
 			else
 			{
-				// No respawns -> reinicia nivel
+				// Sin respawns -> reinicia nivel
 				UGameplayStatics::OpenLevel(this, FName(*GetWorld()->GetName()), false);
 			}
 		}
@@ -184,11 +184,11 @@ void AFTPSCharacter::Respawn()
 		HealthComponent->Revive();
 	}
 
-	// Reubicar jugador
+	// Teletrasnportar jugador
 	SetActorLocation(InitialPosition);
 	SetActorRotation(InitialRotation);
 
-	// Opcional: resetear estados de acción
+	// Resetear estados
 	bIsDoingMelee = false;
 	bIsFiringWeapon = false;
 	bCanUseWeapon = true;
@@ -280,10 +280,8 @@ void AFTPSCharacter::HandleAutoFire()
 	// Si el arma está recargando o haciendo melee, no dispara
 	if (CurrentWeapon->IsReloading() || bIsDoingMelee) return;
 
-	// Intentar disparar
 	CurrentWeapon->StartAction();
 
-	// Configurar siguiente disparo después de FireRate
 	GetWorldTimerManager().SetTimer(
 		TimerHandle_AutoFire,
 		this,
